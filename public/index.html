@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenEnv - Grid World</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌍 OpenEnv - Grid World</h1>
+      <p class="subtitle">A Reinforcement Learning Environment</p>
+    </header>
+
+    <main>
+      <!-- Environment Info -->
+      <section class="info-panel">
+        <h2>Environment Info</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Environment:</span>
+            <span class="value" id="env-name">GridWorld-v0</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Grid Size:</span>
+            <span class="value" id="grid-size">5x5</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Steps:</span>
+            <span class="value" id="steps">0</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Total Reward:</span>
+            <span class="value" id="total-reward">0.00</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Status:</span>
+            <span class="value" id="status">Ready</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid Visualization -->
+      <section class="grid-section">
+        <h2>Environment Grid</h2>
+        <div class="grid-container">
+          <div id="grid" class="grid"></div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="cell agent"></span> Agent</div>
+          <div class="legend-item"><span class="cell goal"></span> Goal (+10)</div>
+          <div class="legend-item"><span class="cell obstacle"></span> Obstacle (-0.5)</div>
+          <div class="legend-item"><span class="cell pit"></span> Pit (-1)</div>
+          <div class="legend-item"><span class="cell empty"></span> Empty (-0.01/step)</div>
+        </div>
+      </section>
+
+      <!-- Controls -->
+      <section class="controls-section">
+        <h2>Controls</h2>
+        
+        <div class="action-buttons">
+          <button class="action-btn" onclick="takeAction(0)" id="btn-up">
+            <span class="arrow">↑</span> Up
+          </button>
+          <div class="horizontal-btns">
+            <button class="action-btn" onclick="takeAction(3)" id="btn-left">
+              <span class="arrow">←</span> Left
+            </button>
+            <button class="action-btn" onclick="takeAction(2)" id="btn-down">
+              <span class="arrow">↓</span> Down
+            </button>
+            <button class="action-btn" onclick="takeAction(1)" id="btn-right">
+              <span class="arrow">→</span> Right
+            </button>
+          </div>
+        </div>
+
+        <div class="control-buttons">
+          <button class="ctrl-btn reset-btn" onclick="resetEnv()">🔄 Reset Environment</button>
+          <button class="ctrl-btn info-btn" onclick="showInfo()">📋 Environment Info</button>
+        </div>
+
+        <div class="keyboard-hint">
+          <p>💡 Use <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or Arrow Keys to move</p>
+        </div>
+      </section>
+
+      <!-- Last Action & Reward -->
+      <section class="feedback-section">
+        <h2>Last Action</h2>
+        <div id="last-action" class="feedback-box">
+          <p>No actions taken yet. Press a button or use keyboard to start!</p>
+        </div>
+      </section>
+
+      <!-- API Documentation -->
+      <section class="api-section">
+        <h2>API Documentation</h2>
+        <div class="api-docs">
+          <div class="api-endpoint">
+            <span class="method post">POST</span>
+            <code>/api/reset</code>
+            <span class="desc">Reset the environment to initial state</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method post">POST</span>
+            <code>/api/step</code>
+            <span class="desc">Take an action: { action: 0-3 }</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method get">GET</span>
+            <code>/api/state</code>
+            <span class="desc">Get current state without taking action</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method get">GET</span>
+            <code>/api/env/info</code>
+            <span class="desc">Get environment information</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Code Example -->
+      <section class="code-section">
+        <h2>Usage Example</h2>
+        <pre><code class="language-javascript">
+// Using the OpenEnv API
+
+// 1. Reset the environment
+const resetResponse = await fetch('/api/reset', { method: 'POST' });
+const { state } = await resetResponse.json();
+console.log('Initial state:', state);
+
+// 2. Take actions
+const actions = { UP: 0, RIGHT: 1, DOWN: 2, LEFT: 3 };
+
+const stepResponse = await fetch('/api/step', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ action: actions.RIGHT })
+});
+
+const { state: newState, reward, done, info } = await stepResponse.json();
+console.log('Reward:', reward, 'Done:', done);
+
+// 3. Get current state
+const stateResponse = await fetch('/api/state');
+const currentState = await stateResponse.json();
+console.log('Current state:', currentState);
+
+// 4. Training loop example
+async function train() {
+  await fetch('/api/reset', { method: 'POST' });
+  
+  let done = false;
+  let totalReward = 0;
+  
+  while (!done) {
+    const action = agent.selectAction(); // Your RL agent
+    const response = await fetch('/api/step', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action })
+    });
+    
+    const { reward, done: episodeDone, state } = await response.json();
+    totalReward += reward;
+    done = episodeDone;
+    
+    agent.learn(state, reward); // Update your agent
+  }
+  
+  console.log('Episode complete! Total reward:', totalReward);
+}
+        </code></pre>
+      </section>
+    </main>
+
+    <footer>
+      <p>OpenEnv Project | Built with Node.js & Express</p>
+      <p><a href="/about">About</a> | <a href="/">Home</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // State management
+    let currentEnv = {
+      env_id: 'default',
+      initialized: false
+    };
+
+    // Initialize environment on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      resetEnv();
+      setupKeyboardControls();
+    });
+
+    // Reset the environment
+    async function resetEnv() {
+      try {
+        const response = await fetch('/api/reset', { method: 'POST' });
+        const data = await response.json();
+        
+        currentEnv.initialized = true;
+        updateUI(data);
+        renderGrid(data.state);
+        
+        showFeedback('success', 'Environment reset! Agent is at starting position.');
+      } catch (error) {
+        showFeedback('error', 'Failed to reset environment: ' + error.message);
+      }
+    }
+
+    // Take an action
+    async function takeAction(action) {
+      if (!currentEnv.initialized) {
+        await resetEnv();
+      }
+
+      try {
+        const response = await fetch('/api/step', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: parseInt(action) })
+        });
+        
+        const data = await response.json();
+        updateUI(data);
+        renderGrid(data.state);
+        
+        const actionNames = ['UP ↑', 'RIGHT →', 'DOWN ↓', 'LEFT ←'];
+        let message = `Action: ${actionNames[action]} | Reward: ${data.reward}`;
+        
+        if (data.done) {
+          if (data.info && data.info.success) {
+            message += ' | 🎉 GOAL REACHED!';
+          } else {
+            message += ' | Episode finished';
+          }
+        }
+        
+        showFeedback('info', message);
+        
+        // Highlight the button briefly
+        const btnIds = ['btn-up', 'btn-right', 'btn-down', 'btn-left'];
+        const btn = document.getElementById(btnIds[action]);
+        btn.classList.add('clicked');
+        setTimeout(() => btn.classList.remove('clicked'), 200);
+        
+      } catch (error) {
+        showFeedback('error', 'Failed to take action: ' + error.message);
+      }
+    }
+
+    // Update UI elements
+    function updateUI(data) {
+      if (data.state) {
+        document.getElementById('steps').textContent = data.state.steps;
+        document.getElementById('total-reward').textContent = data.state.total_reward.toFixed(2);
+        document.getElementById('grid-size').textContent = `${data.state.grid_size}x${data.state.grid_size}`;
+      }
+      
+      const statusEl = document.getElementById('status');
+      if (data.done) {
+        statusEl.textContent = 'Episode Complete';
+        statusEl.className = 'value done';
+      } else {
+        statusEl.textContent = 'Active';
+        statusEl.className = 'value active';
+      }
+    }
+
+    // Render the grid
+    function renderGrid(state) {
+      const gridEl = document.getElementById('grid');
+      gridEl.innerHTML = '';
+      
+      const gridSize = state.grid_size;
+      gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 50px)`;
+      gridEl.style.gridTemplateRows = `repeat(${gridSize}, 50px)`;
+      
+      // Render from top (highest y) to bottom (y=0)
+      for (let y = gridSize - 1; y >= 0; y--) {
+        for (let x = 0; x < gridSize; x++) {
+          const cell = document.createElement('div');
+          const cellType = state.grid[y][x];
+          
+          cell.className = `cell ${cellType}`;
+          cell.title = `${cellType} (${x}, ${y})`;
+          
+          // Add coordinates
+          cell.innerHTML = `<span class="coords">${x},${y}</span>`;
+          
+          gridEl.appendChild(cell);
+        }
+      }
+    }
+
+    // Show feedback message
+    function showFeedback(type, message) {
+      const feedbackEl = document.getElementById('last-action');
+      feedbackEl.className = `feedback-box ${type}`;
+      feedbackEl.innerHTML = `<p>${message}</p>`;
+    }
+
+    // Show environment info
+    async function showInfo() {
+      try {
+        const response = await fetch('/api/env/info');
+        const data = await response.json();
+        
+        const infoHtml = `
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Description:</strong> ${data.description}</p>
+          <p><strong>Action Space:</strong> ${data.action_space.n} discrete actions (${data.action_space.labels.join(', ')})</p>
+          <p><strong>Observation Space:</strong> ${data.observation_space.shape.join('x')} grid</p>
+          <p><strong>Reward Range:</strong> [${data.reward_range.min}, ${data.reward_range.max}]</p>
+          <p><strong>Max Steps:</strong> ${data.max_steps}</p>
+        `;
+        
+        showFeedback('info', infoHtml);
+      } catch (error) {
+        showFeedback('error', 'Failed to get info: ' + error.message);
+      }
+    }
+
+    // Keyboard controls
+    function setupKeyboardControls() {
+      document.addEventListener('keydown', (e) => {
+        // Prevent default for game keys
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+          e.preventDefault();
+        }
+
+        // Map keys to actions
+        const keyMap = {
+          'ArrowUp': 0, 'w': 0, 'W': 0,
+          'ArrowRight': 1, 'd': 1, 'D': 1,
+          'ArrowDown': 2, 's': 2, 'S': 2,
+          'ArrowLeft': 3, 'a': 3, 'A': 3
+        };
+
+        if (keyMap.hasOwnProperty(e.key)) {
+          takeAction(keyMap[e.key]);
+        }
+
+        // R to reset
+        if (e.key === 'r' || e.key === 'R') {
+          resetEnv();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

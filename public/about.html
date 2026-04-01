@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - OpenEnv</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌍 About OpenEnv</h1>
+      <p class="subtitle">A Standard Environment Interface for AI Agents</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>What is OpenEnv?</h2>
+        <p>
+          OpenEnv is a standardized environment interface for training and testing 
+          reinforcement learning (RL) agents. It provides a simple yet powerful API 
+          that follows the classic <code>step()</code> / <code>reset()</code> / <code>state()</code> 
+          pattern used in popular RL frameworks.
+        </p>
+      </section>
+
+      <section>
+        <h2>Current Environment: GridWorld-v0</h2>
+        <p>
+          The current implementation features a <strong>Grid World</strong> environment - 
+          a classic reinforcement learning problem where an agent navigates a 5×5 grid 
+          to reach a goal while avoiding obstacles and pits.
+        </p>
+        
+        <h3 style="margin-top: 20px; color: #00d9ff;">Environment Details:</h3>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li><strong>Agent:</strong> Starts at position (0, 0)</li>
+          <li><strong>Goal:</strong> Located at position (4, 4) - Reward: +10</li>
+          <li><strong>Obstacles:</strong> Walls that block movement - Penalty: -0.5</li>
+          <li><strong>Pits:</strong> Trap zones - Penalty: -1</li>
+          <li><strong>Step Penalty:</strong> -0.01 per step (encourages efficiency)</li>
+          <li><strong>Boundary:</strong> Hitting the edge - Penalty: -0.1</li>
+          <li><strong>Max Steps:</strong> 100 (episode ends if not reached goal)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>API Endpoints</h2>
+        <div class="api-docs">
+          <div class="api-endpoint">
+            <span class="method post">POST</span>
+            <code>/api/reset</code>
+            <span class="desc">Reset environment to initial state</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method post">POST</span>
+            <code>/api/step</code>
+            <span class="desc">Execute action (body: { action: 0-3 })</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method get">GET</span>
+            <code>/api/state</code>
+            <span class="desc">Get current environment state</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method get">GET</span>
+            <code>/api/env/info</code>
+            <span class="desc">Get environment metadata</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method get">GET</span>
+            <code>/api/envs</code>
+            <span class="desc">List all active environments</span>
+          </div>
+          <div class="api-endpoint">
+            <span class="method delete">DELETE</span>
+            <code>/api/env/:env_id</code>
+            <span class="desc">Delete an environment instance</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Action Space</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 15px;">
+          <div class="info-item">
+            <span class="label">Action 0</span>
+            <span class="value">↑ Up</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Action 1</span>
+            <span class="value">→ Right</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Action 2</span>
+            <span class="value">↓ Down</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Action 3</span>
+            <span class="value">← Left</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Getting Started</h2>
+        <pre><code class="language-javascript">
+// 1. Start the server
+npm install
+npm start
+
+// 2. Reset the environment
+curl -X POST http://localhost:3000/api/reset
+
+// 3. Take actions
+curl -X POST http://localhost:3000/api/step \
+  -H "Content-Type: application/json" \
+  -d '{"action": 1}'
+
+// 4. Check state
+curl http://localhost:3000/api/state
+        </code></pre>
+      </section>
+
+      <section>
+        <h2>Use Cases</h2>
+        <ul style="margin-left: 20px;">
+          <li>Training reinforcement learning agents (Q-Learning, DQN, etc.)</li>
+          <li>Testing pathfinding algorithms (A*, Dijkstra)</li>
+          <li>Educational purposes for AI/ML courses</li>
+          <li>Prototyping RL algorithms before scaling to complex environments</li>
+          <li>Comparing different RL approaches on a standard benchmark</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>OpenEnv Project | Built with Node.js & Express</p>
+      <p>
+        <a href="/index.html">Try the Environment</a> | 
+        <a href="/">Home</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

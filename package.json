@@ -1,0 +1,29 @@
+{
+  "name": "openenv-project",
+  "version": "1.0.0",
+  "description": "A complete, real-world OpenEnv environment that AI agents can learn from through the standard step()/reset()/state() API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node agent.js",
+    "demo": "node agent.js"
+  },
+  "keywords": [
+    "reinforcement-learning",
+    "openenv",
+    "gridworld",
+    "ai",
+    "agent",
+    "q-learning",
+    "gym",
+    "environment"
+  ],
+  "author": "OpenEnv Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
