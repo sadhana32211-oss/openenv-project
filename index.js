@@ -342,10 +342,12 @@ app.get('/api/envs', (req, res) => {
 
 // API: Reset environment
 app.post('/api/reset', (req, res) => {
-  const { env_id = 'default', grid_size = 5 } = req.query;
+  const env_id = req.body.env_id || 'default';
+  const grid_size = req.body.grid_size || 5;
+
   const env = envManager.getOrCreate(env_id, parseInt(grid_size));
   const state = env.reset();
-  
+
   res.json({
     env_id: env_id,
     state: state,
