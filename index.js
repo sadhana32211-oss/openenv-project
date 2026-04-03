@@ -342,8 +342,9 @@ app.get('/api/envs', (req, res) => {
 
 // API: Reset environment
 app.post('/reset', (req, res) => {
-  const env_id = req.body.env_id || 'default';
-  const grid_size = req.body.grid_size || 5;
+
+  const env_id = req.body?.env_id || 'default';
+  const grid_size = req.body?.grid_size || 5;
 
   const env = envManager.getOrCreate(env_id, parseInt(grid_size));
   const state = env.reset();
@@ -405,7 +406,7 @@ app.delete('/api/env/:env_id', (req, res) => {
 // START SERVER
 // ============================================
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`🌍 OpenEnv Server running at http://localhost:${port}`);
   console.log(`📊 API endpoints:`);
   console.log(`   GET  /api/env/info  - Environment information`);
