@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🌍 OpenEnv - Grid World Environment
 
 A complete, real-world OpenEnv environment that AI agents can learn from through the standard `step()` / `reset()` / `state()` API.
@@ -470,7 +469,3 @@ Feel free to submit issues and enhancement requests!
 ## License
 
 ISC
-=======
-# openenv-project
-OpenEnv is a custom reinforcement learning environment built with Node.js.  It provides a standard API (reset, step, state) for training AI agents,  along with a simple grid-based interface for interaction and visualization.
->>>>>>> 36ee0a5f5953cae6c162a55faaf906ed88003f59
