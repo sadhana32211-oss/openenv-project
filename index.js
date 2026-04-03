@@ -341,7 +341,7 @@ app.get('/api/envs', (req, res) => {
 });
 
 // API: Reset environment
-app.post('/reset', (req, res) => {
+app.post('/api/reset', (req, res) => {
   const env_id = req.body.env_id || 'default';
   const grid_size = req.body.grid_size || 5;
 
