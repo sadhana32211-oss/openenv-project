@@ -331,9 +331,34 @@ const envManager = new EnvironmentManager();
 // API ROUTES
 // ============================================
 
-// Home
-app.get('/', (req, res) => {
-  res.send('OpenEnv Running ✅');
+// Reset for checker (IMPORTANT)
+app.post('/reset', (req, res) => {
+  const env_id = req.body?.env_id || 'default';
+  const grid_size = req.body?.grid_size || 5;
+
+  const env = envManager.getOrCreate(env_id, parseInt(grid_size));
+  const state = env.reset();
+
+  res.json({
+    env_id,
+    state,
+    info: env.getInfo()
+  });
+});
+
+// Reset for UI
+app.post('/reset', (req, res) => {
+  const env_id = req.body?.env_id || 'default';
+  const grid_size = req.body?.grid_size || 5;
+
+  const env = envManager.getOrCreate(env_id, parseInt(grid_size));
+  const state = env.reset();
+
+  res.json({
+    env_id,
+    state,
+    info: env.getInfo()
+  });
 });
 
 // Environment Info
@@ -348,28 +373,31 @@ app.get('/api/envs', (req, res) => {
   res.json(envManager.list());
 });
 
-// Reset environment
-app.post('/api/reset', (req, res) => {
+
+// Reset for Hugging Face (IMPORTANT)
+app.post('/reset', (req, res) => {
   const env_id = req.body?.env_id || 'default';
   const grid_size = req.body?.grid_size || 5;
 
-  const state = envManager.reset(env_id, parseInt(grid_size));
+  const env = envManager.getOrCreate(env_id, parseInt(grid_size));
+  const state = env.reset();
 
   res.json({
     env_id: env_id,
     state: state,
-    info: envManager.get(env_id).getInfo()
+    info: env.getInfo()
   });
 });
 
-// Take a step
+// Reset for your app
+// Step API (REQUIRED for OpenEnv)
 app.post('/api/step', (req, res) => {
-  const { action, env_id = 'default' } = req.body;
+  const action = req.body?.action;
+  const env_id = req.body?.env_id || 'default';
 
-  if (action === undefined || action === null) {
+  if (action === undefined) {
     return res.status(400).json({
-      error: 'Missing required parameter: action',
-      message: 'Action must be an integer 0-3 representing direction (0=UP, 1=RIGHT, 2=DOWN, 3=LEFT)'
+      error: "Action is required (0-3)"
     });
   }
 
